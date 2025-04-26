@@ -1,3 +1,10 @@
+if (typeof AOS !== 'undefined' && typeof AOS.init === 'function') {
+    AOS.init({
+        duration: 700
+      });
+      
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     let swiper = new Swiper(".projects__slider", {
         loop: false,
@@ -21,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 spaceBetween: 121,
             },
         },
-    });
+    });    
 });
 
 document.querySelectorAll('.form-item input').forEach(input => {
@@ -75,4 +82,58 @@ document.querySelectorAll('.faq__item-title').forEach(title => {
             currentItem.classList.add('active');
         }
     });
+});
+
+
+document.querySelectorAll('.header__menu-more').forEach(link => {
+    link.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+            e.preventDefault();
+            this.classList.toggle('show');
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    const bannerSection = document.querySelector('.banner-about');
+    const counters = bannerSection.querySelectorAll('.banner__about-num span');
+    let started = false;
+    const animateCounters = () => {
+        counters.forEach(counter => {
+            let fullText = counter.innerText;
+            let match = fullText.match(/\d+/);
+
+            if (match) {
+                let target = parseInt(match[0]);
+                let suffix = fullText.replace(match[0], '');
+                let count = 0;
+                let speed = target / 100;
+
+                const updateCount = () => {
+                    count += speed;
+                    if(count < target) {
+                        counter.innerText = Math.ceil(count) + suffix;
+                        requestAnimationFrame(updateCount);
+                    } else {
+                        counter.innerText = target + suffix;
+                    }
+                };
+
+                updateCount();
+            }
+        });
+    };
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !started) {
+                animateCounters();
+                started = true;
+            }
+        });
+    }, {
+        threshold: 0.3
+    });
+
+    observer.observe(bannerSection);
 });
